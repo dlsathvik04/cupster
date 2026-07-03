@@ -1,9 +1,10 @@
-use crate::sync::Endian;
+use crate::sync::{Endian, RasterVersion};
 use std::io::{Read, Result};
 
 pub struct CUPSReader<R: Read> {
     reader: R,
-    endian: Endian,
+    pub endian: Endian,
+    pub raster_version: RasterVersion,
 }
 
 impl<R: Read> CUPSReader<R> {
@@ -27,7 +28,7 @@ impl<R: Read> CUPSReader<R> {
         }
     }
 
-    pub fn read_str_64byte(&mut self) -> Result<[u8; 64]> {
+    pub fn read_bytes_64(&mut self) -> Result<[u8; 64]> {
         let mut buf: [u8; 64] = [0; 64];
         self.reader.read_exact(&mut buf)?;
         Ok(buf)
