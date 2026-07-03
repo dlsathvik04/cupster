@@ -169,25 +169,10 @@ impl V2Header {
     }
 }
 
-/// Defines the header structure of the
-/// Version 3 of the CUPS raster format.
-/// Version 3 header is the same as the version 2
-pub struct V3Header {
-    pub v2_header: V2Header,
-}
-
-impl V3Header {
-    pub fn from_cups_reader<R: Read>(reader: &mut CUPSReader<R>) -> Result<Self> {
-        Ok(Self {
-            v2_header: V2Header::from_cups_reader(reader)?,
-        })
-    }
-}
-
 pub enum PageHeader {
     V1(V1Header),
     V2(V2Header),
-    V3(V3Header),
+    V3(V2Header),
 }
 
 impl PageHeader {
@@ -195,7 +180,15 @@ impl PageHeader {
         match reader.raster_version {
             RasterVersion::V1(_) => Ok(PageHeader::V1(V1Header::from_cups_reader(reader)?)),
             RasterVersion::V2(_) => Ok(PageHeader::V2(V2Header::from_cups_reader(reader)?)),
-            RasterVersion::V3(_) => Ok(PageHeader::V3(V3Header::from_cups_reader(reader)?)),
+            RasterVersion::V3(_) => Ok(PageHeader::V3(V2Header::from_cups_reader(reader)?)),
+        }
+    }
+
+    pub fn v1_spec(&self) -> &V1Header {
+        match self {
+            PageHeader::V1(v1_header) => v1_header,
+            PageHeader::V2(v2_header) => &v2_header.v1_header,
+            PageHeader::V3(v2_header) => &v2_header.v1_header,
         }
     }
 }
