@@ -1,5 +1,9 @@
-use crate::sync::RasterVersion;
+use std::io::Read;
 
+use crate::{reader::CUPSReader, sync::RasterVersion};
+
+/// Defines the structure of the header for the
+/// Version 1 of the CUPS raster format
 pub struct V1Header {
     pub media_class: [u8; 64],
     pub media_color: [u8; 64],
@@ -48,6 +52,9 @@ pub struct V1Header {
     pub cups_row_step: u32,
 }
 
+/// Defines the header structure of the
+/// Version 2 of the CUPS raster format.
+/// Version 2 extnds Version1 with extra fields
 pub struct V2Header {
     pub v1_header: V1Header,
     pub cups_num_colors: u32,
@@ -60,12 +67,15 @@ pub struct V2Header {
     pub cups_imaging_bbox_top: f32,
     pub cups_integers: [u32; 16],
     pub cups_reals: [f32; 16],
-    pub cups_strings: [u8; 1024],
+    pub cups_strings: [[u8; 64]; 16],
     pub cups_marker_type: String,
     pub cups_rendering_intent: String,
     pub cups_page_size_name: String,
 }
 
+/// Defines the header structure of the
+/// Version 3 of the CUPS raster format.
+/// Version 3 header is the same as the version 2
 pub struct V3Header {
     pub v2_header: V2Header,
 }
