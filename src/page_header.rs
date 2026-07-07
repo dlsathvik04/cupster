@@ -144,7 +144,6 @@ impl V2Header {
         for i in &mut cups_reals {
             *i = reader.read_f32()?;
         }
-
         let mut cups_strings = [[0u8; 64]; 16];
         for s in &mut cups_strings {
             *s = reader.read_bytes_64()?;

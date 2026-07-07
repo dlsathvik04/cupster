@@ -1,5 +1,5 @@
 use crate::sync::{Endian, RasterVersion};
-use std::io::{Read, Result};
+use std::io::{Error, Read, Result};
 
 pub struct CUPSReader<R: Read> {
     reader: R,
@@ -8,10 +8,29 @@ pub struct CUPSReader<R: Read> {
 }
 
 impl<R: Read> CUPSReader<R> {
+    pub fn from_reader(mut reader: R) -> Result<Self> {
+        let mut buff = [0u8; 4];
+        reader.read_exact(&mut buff)?;
+        let raster_version = match RasterVersion::from_sync_bytes(&buff) {
+            Ok(rv) => rv,
+            Err(_) => return Err(Error::other("Invalid Sync Bytes")),
+        };
+        let endian = match raster_version.clone() {
+            RasterVersion::V1(endian) => endian,
+            RasterVersion::V2(endian) => endian,
+            RasterVersion::V3(endian) => endian,
+        };
+
+        Ok(CUPSReader {
+            reader,
+            endian,
+            raster_version,
+        })
+    }
+
     pub fn read_u32(&mut self) -> Result<u32> {
         let mut buff = [0u8; 4];
         self.reader.read_exact(&mut buff)?;
-
         match self.endian {
             Endian::Big => Ok(u32::from_be_bytes(buff)),
             Endian::Little => Ok(u32::from_le_bytes(buff)),
@@ -21,7 +40,6 @@ impl<R: Read> CUPSReader<R> {
     pub fn read_f32(&mut self) -> Result<f32> {
         let mut buff = [0u8; 4];
         self.reader.read_exact(&mut buff)?;
-
         match self.endian {
             Endian::Big => Ok(f32::from_be_bytes(buff)),
             Endian::Little => Ok(f32::from_le_bytes(buff)),
