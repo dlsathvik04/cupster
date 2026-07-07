@@ -2,6 +2,7 @@ use crate::errors::ParsingError;
 
 /// Enum to reprenset the endianness of the source machin
 /// will be derived from sync_bytes
+#[derive(Clone)]
 pub enum Endian {
     Big,
     Little,
@@ -9,6 +10,7 @@ pub enum Endian {
 
 /// Enum to reprenset the Raster Format version
 /// the version may effect the header structure
+#[derive(Clone)]
 pub enum RasterVersion {
     V1(Endian),
     V2(Endian),

@@ -1,6 +1,6 @@
 use std::io::{Read, Result};
 
-use crate::{reader::CUPSReader, sync::RasterVersion};
+use crate::{cups_reader::CUPSReader, sync::RasterVersion};
 
 /// Defines the structure of the header for the
 /// Version 1 of the CUPS raster format

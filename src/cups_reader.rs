@@ -33,4 +33,16 @@ impl<R: Read> CUPSReader<R> {
         self.reader.read_exact(&mut buf)?;
         Ok(buf)
     }
+
+    pub fn read_byte(&mut self) -> Result<u8> {
+        let mut byte = [0u8];
+        self.reader.read_exact(&mut byte)?;
+        Ok(byte[0])
+    }
+
+    pub fn read_n_bytes(&mut self, n: usize) -> Result<Vec<u8>> {
+        let mut buff: Vec<u8> = vec![0u8; n];
+        self.reader.read_exact(&mut buff)?;
+        Ok(buff)
+    }
 }
